@@ -1,43 +1,36 @@
 
-  html, body {
+html, body {
       height: 100vh;
       margin: 0;
+      padding: 0;
     }
 
-#container-stripes{
+h1 {
+  position: fixed; /* fixa o elemento na tela, mesmo se rolar */
+  top: 50%;        /* posiciona no meio vertical */
+  left: 50%;       /* posiciona no meio horizontal */
+  transform: translate(-50%, -50%); /* centraliza exatamente */
+  z-index: 10;     /* fica na frente das divs */
+  margin: 0;
+  padding: 0;
+  font-size: 10rem;
+  pointer-events: none;
 
-    display: flex;
-      flex-direction: column;
-      height: 100vh; /* altura total da tela */
 }
 
-.color1 {
-
-    background-color: FF0000;
-
+#container-stripes {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.stripes {
-
-    height: calc(100vh / 14);
-      width: 100vw;
-      text-align: center;
-      line-height: calc(100vh / 14);
-      color: white;
-      font-weight: bold;
+.stripe {
+  flex: 1; /* divide igualmente */
+  width: 100%;
+  transition: filter 0.2s;
 }
 
-   .color1  { background-color: #FF0000; }
-    .color2  { background-color: #8B0000; }
-    .color3  { background-color: #FFA500; }
-    .color4  { background-color: #FF4500; }
-    .color5  { background-color: #FFFF00; color: black; }
-    .color6  { background-color: #FFD700; color: black; }
-    .color7  { background-color: #7CFC00; color: black; }
-    .color8  { background-color: #006400; }
-    .color9  { background-color: #00BFFF; }
-    .color10 { background-color: #0000CD; }
-    .color11 { background-color: #4B0082; }
-    .color12 { background-color: #2E0854; }
-    .color13 { background-color: #DA70D6; color: black; }
-    .color14 { background-color: #800080; }
+.stripe:hover {
+  filter: brightness(1.2);
+ 
+}
