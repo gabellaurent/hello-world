@@ -1,22 +1,22 @@
 const container = document.getElementById("container-stripes");
 
 let colors = [
-  [
-  "#FF0000",
-  "#8B0000",
-  "#FFA500",
-  "#FF4500",
-  "#FFFF00",
-  "#FFD700",
-  "#7CFC00",
-  "#006400",
-  "#00BFFF",
-  "#0000CD",
-  "#4B0082",
-  "#2E0854",
-  "#DA70D6",
-  "#800080"
-  ], 
+[
+  "#FF0000", 
+  "#FF6347", 
+  "#FF4500", 
+  "#DC143C", 
+  "#B22222", 
+  "#8B0000", 
+  "#A52A2A", 
+  "#CD5C5C", 
+  "#E9967A", 
+  "#FA8072", 
+  "#F08080", 
+  "#FF7F7F", 
+  "#FF2400",
+  "#C41E3A" 
+], 
   
   [
   "#E0FFFF",
