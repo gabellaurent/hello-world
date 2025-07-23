@@ -12,7 +12,7 @@
   // CSS do chat
   var css = `
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #313338; margin: 0; padding: 0; }
-    .chat-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .chat-wrapper { width: 100%; height: 95%; display: flex; align-items: center; justify-content: center; }
     .container { background: #36393f; padding: 0; border-radius: 12px; max-width: 420px; width: 100%; height: 100%; box-shadow: 0 2px 24px 0 rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; }
     h1 { color: #fff; font-size: 1.4rem; font-weight: 600; background: #23272a; margin: 0; padding: 18px 0 12px 0; border-radius: 12px 12px 0 0; letter-spacing: 1px; width: 100%; box-sizing: border-box; text-align: center; }
     .user-box { background: #23272a; padding: 10px 16px 8px 16px; border-bottom: 1px solid #222; width: 100%; box-sizing: border-box; }
@@ -34,8 +34,8 @@
     .erro-usuario::placeholder { color: #ff5555 !important; opacity: 1; }
     @media (max-width: 600px) {
       body { height: 100vh; min-height: 100vh; max-height: 100vh; margin: 0; padding: 0; overflow: hidden; }
-      .chat-wrapper { height: 100vh; }
-      .container { width: 100vw; height: 100vh; min-height: 100vh; border-radius: 0; margin: 0; }
+      .chat-wrapper { width: 100vw; max-width: 100vw; max-height: 100vh; border-radius: 0; margin: 0; }
+      .container { width: 100%; height: 100%; min-height: 100%; border-radius: 0; margin: 0; }
       .chat-box { flex: 1 1 0; min-height: 0; padding-left: 4px; padding-right: 4px; background: #23272a; }
       .input-box { padding-left: 4px; padding-right: 4px; }
       .user-box { padding-left: 8px; padding-right: 8px; }
