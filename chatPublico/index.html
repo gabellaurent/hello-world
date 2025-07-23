@@ -4,29 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-</head>
-<body>
-  <div id="chat-root"></div>
   <style>
-    html, body, #chat-root {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      min-height: 100vh;
-      min-width: 100vw;
+    #chat-root {
+      width: 90vw;
+      height: 90vh;
+      max-width: 600px;
+      max-height: 98vh;
     }
     @media (max-width: 600px) {
       #chat-root {
         width: 100vw !important;
         height: 100vh !important;
-        min-width: 100vw;
-        min-height: 100vh;
-        margin-bottom: 10vh;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        margin: 0;
+        padding: 0;
       }
     }
   </style>
+</head>
+<body>
+  <div id="chat-root" style="width:90vw; height:90vh; max-width:600px; max-height:98vh;"></div>
   <script src="chat-embed.js"></script>
 </body>
 </html>
