@@ -1,3 +1,25 @@
+@media (max-width: 600px) {
+  .container {
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+  .chat-box {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .input-box {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .user-box {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: #313338;
