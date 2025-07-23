@@ -211,9 +211,15 @@
 
     let chatChannel; // Variável global para o canal
 
-    function subscribeToChat() {
+    async function subscribeToChat() {
+      // Se já existe um canal, desinscreve corretamente antes de criar outro
       if (chatChannel) {
-        chatChannel.unsubscribe();
+        try {
+          await chatChannel.unsubscribe();
+        } catch (e) {
+          // Ignora erros de unsubscribe
+        }
+        chatChannel = null;
       }
       chatChannel = supabase
         .channel("public:meu-chat")
