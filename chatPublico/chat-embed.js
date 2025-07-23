@@ -36,6 +36,39 @@
   `;
 
   function mountChat() {
+    // Função para checar conexão com Supabase (apenas alerta real)
+    async function checarConexao() {
+      try {
+        // Faz uma consulta simples para testar conexão
+        const { error, status } = await supabase.from('meu-chat').select('id').limit(1);
+        // Só mostra alerta se erro de rede ou status 0/500+
+        if (error && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || status === 0 || (status && status >= 500))) {
+          if (!document.getElementById('alerta-conexao')) {
+            const alerta = document.createElement('div');
+            alerta.id = 'alerta-conexao';
+            alerta.textContent = 'Conexão com o banco perdida. Tente recarregar a página.';
+            alerta.style = 'position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;';
+            document.body.appendChild(alerta);
+          }
+        } else {
+          // Remove alerta visual se conexão estiver ok
+          if (document.getElementById('alerta-conexao')) {
+            document.getElementById('alerta-conexao').remove();
+          }
+        }
+      } catch (e) {
+        // Só mostra alerta se erro de rede
+        if (!document.getElementById('alerta-conexao')) {
+          const alerta = document.createElement('div');
+          alerta.id = 'alerta-conexao';
+          alerta.textContent = 'Conexão com o banco perdida. Tente recarregar a página.';
+          alerta.style = 'position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;';
+          document.body.appendChild(alerta);
+        }
+      }
+    }
+    // Checa conexão a cada 30 segundos
+    setInterval(checarConexao, 30000);
     // Adiciona o CSS
     var style = document.createElement('style');
     style.innerHTML = css;
