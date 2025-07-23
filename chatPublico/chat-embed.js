@@ -12,8 +12,8 @@
   // CSS do chat
   var css = `
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #313338; margin: 0; padding: 0; }
-    .chat-wrapper { height: 800px; display: flex; align-items: center; justify-content: center; }
-    .container { background: #36393f; padding: 0; border-radius: 12px; max-width: 420px; width: 100%; box-shadow: 0 2px 24px 0 rgba(0,0,0,0.25); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .chat-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .container { background: #36393f; padding: 0; border-radius: 12px; max-width: 420px; width: 100%; height: 100%; box-shadow: 0 2px 24px 0 rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; }
     h1 { color: #fff; font-size: 1.4rem; font-weight: 600; background: #23272a; margin: 0; padding: 18px 0 12px 0; border-radius: 12px 12px 0 0; letter-spacing: 1px; width: 100%; box-sizing: border-box; text-align: center; }
     .user-box { background: #23272a; padding: 10px 16px 8px 16px; border-bottom: 1px solid #222; width: 100%; box-sizing: border-box; }
     #usuario { width: 100%; padding: 8px 10px; border-radius: 6px; border: none; background: #40444b; color: #fff; font-size: 1rem; outline: none; box-sizing: border-box; }
@@ -30,6 +30,8 @@
     #enviar:hover { background: #4752c4; }
     ::-webkit-scrollbar { width: 8px; background: #23272a; }
     ::-webkit-scrollbar-thumb { background: #40444b; border-radius: 4px; }
+    .erro-usuario { border: 2px solid #ff5555 !important; box-shadow: 0 0 0 2px #ff555588; background: #3a2323 !important; color: #fff !important; }
+    .erro-usuario::placeholder { color: #ff5555 !important; opacity: 1; }
     @media (max-width: 600px) {
       body { height: 100vh; min-height: 100vh; max-height: 100vh; margin: 0; padding: 0; overflow: hidden; }
       .chat-wrapper { height: 100vh; }
@@ -46,8 +48,9 @@
     style.innerHTML = css;
     document.head.appendChild(style);
 
-    // Monta o HTML
-    document.body.innerHTML = '';
+    // Permite renderizar dentro de uma div com id="chat-root", se existir
+    var root = document.getElementById('chat-root') || document.body;
+    if (root === document.body) document.body.innerHTML = '';
     var wrapper = document.createElement('div');
     wrapper.className = 'chat-wrapper';
     wrapper.innerHTML = `
@@ -65,7 +68,7 @@
         </div>
       </div>
     `;
-    document.body.appendChild(wrapper);
+    root.appendChild(wrapper);
 
     // Supabase config
     const supabaseUrl = 'https://xhybbhdhjaluqjrtopml.supabase.co';
@@ -105,14 +108,32 @@
     }
 
     async function enviarMensagem() {
-      const usuario = usuarioInput.value.trim() || 'Anônimo';
+      const usuario = usuarioInput.value.trim();
       const texto = mensagemInput.value.trim();
+      if (!usuario) {
+        usuarioInput.focus();
+        usuarioInput.classList.add('erro-usuario');
+        // Salva placeholder original
+        if (!usuarioInput.dataset.placeholder) {
+          usuarioInput.dataset.placeholder = usuarioInput.placeholder;
+        }
+        usuarioInput.placeholder = 'identifique-se aqui!';
+        setTimeout(() => {
+          usuarioInput.classList.remove('erro-usuario');
+          usuarioInput.placeholder = usuarioInput.dataset.placeholder || 'Seu nome de usuário';
+        }, 1800);
+        return;
+      }
       if (!texto) return;
       mensagemInput.value = '';
       await supabase.from('meu-chat').insert([{ usuario, texto }]);
       setTimeout(() => {
         if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
       }, 100);
+    // Destaque visual para campo de usuário vazio
+    var styleErro = document.createElement('style');
+    styleErro.innerHTML = '.erro-usuario { border: 2px solid #ff5555 !important; box-shadow: 0 0 0 2px #ff555588; }';
+    document.head.appendChild(styleErro);
     }
 
     enviarBtn.onclick = enviarMensagem;

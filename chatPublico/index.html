@@ -6,6 +6,26 @@
   <title>Document</title>
 </head>
 <body>
+  <div id="chat-root"></div>
+  <style>
+    html, body, #chat-root {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+    @media (max-width: 600px) {
+      #chat-root {
+        width: 100vw !important;
+        height: 100vh !important;
+        min-width: 100vw;
+        min-height: 100vh;
+      }
+    }
+  </style>
   <script src="chat-embed.js"></script>
 </body>
 </html>
