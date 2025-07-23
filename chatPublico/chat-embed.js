@@ -1,10 +1,10 @@
 // Chat Supabase em 1 arquivo JS autossuficiente
-(function() {
+(function () {
   // Carrega o supabase-js dinamicamente
   function loadSupabase(callback) {
     if (window.supabase) return callback();
-    var script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js';
+    var script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js";
     script.onload = callback;
     document.head.appendChild(script);
   }
@@ -36,33 +36,51 @@
   `;
 
   function mountChat() {
+    // Solicita permissão para notificações
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
     // Função para checar conexão com Supabase (apenas alerta real)
     async function checarConexao() {
       try {
         // Faz uma consulta simples para testar conexão
-        const { error, status } = await supabase.from('meu-chat').select('id').limit(1);
+        const { error, status } = await supabase
+          .from("meu-chat")
+          .select("id")
+          .limit(1);
         // Só mostra alerta se erro de rede ou status 0/500+
-        if (error && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || status === 0 || (status && status >= 500))) {
-          if (!document.getElementById('alerta-conexao')) {
-            const alerta = document.createElement('div');
-            alerta.id = 'alerta-conexao';
-            alerta.textContent = 'Conexão com o banco perdida. Tente recarregar a página.';
-            alerta.style = 'position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;';
+        if (
+          error &&
+          (error.code === "ECONNABORTED" ||
+            error.code === "ERR_NETWORK" ||
+            status === 0 ||
+            (status && status >= 500))
+        ) {
+          if (!document.getElementById("alerta-conexao")) {
+            const alerta = document.createElement("div");
+            alerta.id = "alerta-conexao";
+            alerta.textContent =
+              "Conexão com o banco perdida. Tente recarregar a página.";
+            alerta.style =
+              "position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;";
             document.body.appendChild(alerta);
           }
         } else {
           // Remove alerta visual se conexão estiver ok
-          if (document.getElementById('alerta-conexao')) {
-            document.getElementById('alerta-conexao').remove();
+          if (document.getElementById("alerta-conexao")) {
+            document.getElementById("alerta-conexao").remove();
           }
         }
       } catch (e) {
         // Só mostra alerta se erro de rede
-        if (!document.getElementById('alerta-conexao')) {
-          const alerta = document.createElement('div');
-          alerta.id = 'alerta-conexao';
-          alerta.textContent = 'Conexão com o banco perdida. Tente recarregar a página.';
-          alerta.style = 'position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;';
+        if (!document.getElementById("alerta-conexao")) {
+          const alerta = document.createElement("div");
+          alerta.id = "alerta-conexao";
+          alerta.textContent =
+            "Conexão com o banco perdida. Tente recarregar a página.";
+          alerta.style =
+            "position:fixed;top:0;left:0;width:100vw;padding:12px;background:#ff5555;color:#fff;text-align:center;z-index:9999;font-weight:bold;";
           document.body.appendChild(alerta);
         }
       }
@@ -70,15 +88,15 @@
     // Checa conexão a cada 30 segundos
     setInterval(checarConexao, 30000);
     // Adiciona o CSS
-    var style = document.createElement('style');
+    var style = document.createElement("style");
     style.innerHTML = css;
     document.head.appendChild(style);
 
     // Permite renderizar dentro de uma div com id="chat-root", se existir
-    var root = document.getElementById('chat-root') || document.body;
-    if (root === document.body) document.body.innerHTML = '';
-    var wrapper = document.createElement('div');
-    wrapper.className = 'chat-wrapper';
+    var root = document.getElementById("chat-root") || document.body;
+    if (root === document.body) document.body.innerHTML = "";
+    var wrapper = document.createElement("div");
+    wrapper.className = "chat-wrapper";
     wrapper.innerHTML = `
       <div class="container">
         <h1>Chat em Tempo Real</h1>
@@ -97,33 +115,52 @@
     root.appendChild(wrapper);
 
     // Supabase config
-    const supabaseUrl = 'https://xhybbhdhjaluqjrtopml.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoeWJiaGRoamFsdXFqcnRvcG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNzQ5NjMsImV4cCI6MjA2ODg1MDk2M30.Xb98A6l-duDBO6G8_3SPKwluyAm-v8LH5G22ysmSXck';
+    const supabaseUrl = "https://xhybbhdhjaluqjrtopml.supabase.co";
+    const supabaseKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoeWJiaGRoamFsdXFqcnRvcG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNzQ5NjMsImV4cCI6MjA2ODg1MDk2M30.Xb98A6l-duDBO6G8_3SPKwluyAm-v8LH5G22ysmSXck";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const chat = document.getElementById('chat');
-    const chatBox = document.querySelector('.chat-box');
-    const usuarioInput = document.getElementById('usuario');
-    const mensagemInput = document.getElementById('mensagem');
-    const enviarBtn = document.getElementById('enviar');
+    const chat = document.getElementById("chat");
+    const chatBox = document.querySelector(".chat-box");
+    const usuarioInput = document.getElementById("usuario");
+    const mensagemInput = document.getElementById("mensagem");
+    const enviarBtn = document.getElementById("enviar");
 
     function mostrarMensagem(msg) {
-      const li = document.createElement('li');
-      li.className = 'chat-msg';
+      const li = document.createElement("li");
+      li.className = "chat-msg";
       li.dataset.id = msg.id;
       const data = new Date(msg.created_at);
-      const hora = data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      li.innerHTML = `<span class="user">${msg.usuario || 'Anônimo'}</span> <span class="hora">${hora}</span><br><span class="texto">${msg.texto}</span>`;
+      const hora = data.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      li.innerHTML = `<span class="user">${
+        msg.usuario || "Anônimo"
+      }</span> <span class="hora">${hora}</span><br><span class="texto">${
+        msg.texto
+      }</span>`;
       chat.appendChild(li);
       if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Notificação se a aba não está em foco
+      if (
+        document.visibilityState !== "visible" &&
+        Notification.permission === "granted"
+      ) {
+        new Notification(`Nova mensagem de ${msg.usuario || "Anônimo"}`, {
+          body: msg.texto,
+          icon: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ac.png",
+        });
+      }
     }
 
     async function carregarMensagens() {
-      chat.innerHTML = '';
+      chat.innerHTML = "";
       const { data, error } = await supabase
-        .from('meu-chat')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("meu-chat")
+        .select("*")
+        .order("created_at", { ascending: false })
         .limit(10);
       if (data) {
         data.reverse().forEach(mostrarMensagem);
@@ -138,52 +175,60 @@
       const texto = mensagemInput.value.trim();
       if (!usuario) {
         usuarioInput.focus();
-        usuarioInput.classList.add('erro-usuario');
+        usuarioInput.classList.add("erro-usuario");
         // Salva placeholder original
         if (!usuarioInput.dataset.placeholder) {
           usuarioInput.dataset.placeholder = usuarioInput.placeholder;
         }
-        usuarioInput.placeholder = 'identifique-se aqui!';
+        usuarioInput.placeholder = "identifique-se aqui!";
         setTimeout(() => {
-          usuarioInput.classList.remove('erro-usuario');
-          usuarioInput.placeholder = usuarioInput.dataset.placeholder || 'Seu nome de usuário';
+          usuarioInput.classList.remove("erro-usuario");
+          usuarioInput.placeholder =
+            usuarioInput.dataset.placeholder || "Seu nome de usuário";
         }, 1800);
         return;
       }
       if (!texto) return;
-      mensagemInput.value = '';
-      await supabase.from('meu-chat').insert([{ usuario, texto }]);
+      mensagemInput.value = "";
+      await supabase.from("meu-chat").insert([{ usuario, texto }]);
       setTimeout(() => {
         if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
       }, 100);
-    // Destaque visual para campo de usuário vazio
-    var styleErro = document.createElement('style');
-    styleErro.innerHTML = '.erro-usuario { border: 2px solid #ff5555 !important; box-shadow: 0 0 0 2px #ff555588; }';
-    document.head.appendChild(styleErro);
+      // Destaque visual para campo de usuário vazio
+      var styleErro = document.createElement("style");
+      styleErro.innerHTML =
+        ".erro-usuario { border: 2px solid #ff5555 !important; box-shadow: 0 0 0 2px #ff555588; }";
+      document.head.appendChild(styleErro);
     }
 
     enviarBtn.onclick = enviarMensagem;
-    mensagemInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    mensagemInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         enviarMensagem();
       }
     });
 
     supabase
-      .channel('public:meu-chat')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'meu-chat' }, payload => {
-        const existe = Array.from(chat.children).some(li => li.dataset.id === payload.new.id);
-        if (!existe) {
-          mostrarMensagem(payload.new);
-          while (chat.children.length > 10) {
-            chat.removeChild(chat.firstChild);
+      .channel("public:meu-chat")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "meu-chat" },
+        (payload) => {
+          const existe = Array.from(chat.children).some(
+            (li) => li.dataset.id === payload.new.id
+          );
+          if (!existe) {
+            mostrarMensagem(payload.new);
+            while (chat.children.length > 10) {
+              chat.removeChild(chat.firstChild);
+            }
+            setTimeout(() => {
+              if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+            }, 50);
           }
-          setTimeout(() => {
-            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-          }, 50);
         }
-      })
+      )
       .subscribe();
 
     carregarMensagens();
