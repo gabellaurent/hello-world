@@ -27,6 +27,7 @@
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     const chat = document.getElementById('chat');
+    const chatBox = document.querySelector('.chat-box');
     const usuarioInput = document.getElementById('usuario');
     const mensagemInput = document.getElementById('mensagem');
     const enviarBtn = document.getElementById('enviar');
@@ -35,11 +36,12 @@
     function mostrarMensagem(msg) {
       const li = document.createElement('li');
       li.className = 'chat-msg';
+      li.dataset.id = msg.id;
       const data = new Date(msg.created_at);
       const hora = data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       li.innerHTML = `<span class="user">${msg.usuario || 'Anônimo'}</span> <span class="hora">${hora}</span><br><span class="texto">${msg.texto}</span>`;
       chat.appendChild(li);
-      chat.scrollTop = chat.scrollHeight;
+      if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     // Carregar mensagens existentes
@@ -48,8 +50,16 @@
       const { data, error } = await supabase
         .from('meu-chat')
         .select('*')
-        .order('created_at', { ascending: true });
-      if (data) data.forEach(mostrarMensagem);
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (data) {
+        // Exibir do mais antigo para o mais recente
+        data.reverse().forEach(mostrarMensagem);
+        // Scroll para o final após renderizar
+        setTimeout(() => {
+          if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+        }, 50);
+      }
     }
 
     // Enviar mensagem
@@ -59,6 +69,10 @@
       if (!texto) return;
       mensagemInput.value = '';
       await supabase.from('meu-chat').insert([{ usuario, texto }]);
+      // Garante que o scroll desça após o envio
+      setTimeout(() => {
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+      }, 100);
     }
 
     enviarBtn.onclick = enviarMensagem;
@@ -73,7 +87,19 @@
     supabase
       .channel('public:meu-chat')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'meu-chat' }, payload => {
-        mostrarMensagem(payload.new);
+        // Verifica se a mensagem já está no chat (evita duplicidade)
+        const existe = Array.from(chat.children).some(li => li.dataset.id === payload.new.id);
+        if (!existe) {
+          mostrarMensagem(payload.new);
+          // Se passar de 10 mensagens, remove a mais antiga (primeira da lista)
+          while (chat.children.length > 10) {
+            chat.removeChild(chat.firstChild);
+          }
+          // Scroll para o final após adicionar nova mensagem
+          setTimeout(() => {
+            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+          }, 50);
+        }
       })
       .subscribe();
 
