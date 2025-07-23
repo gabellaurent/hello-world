@@ -209,28 +209,50 @@
       }
     });
 
-    supabase
-      .channel("public:meu-chat")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "meu-chat" },
-        (payload) => {
-          const existe = Array.from(chat.children).some(
-            (li) => li.dataset.id === payload.new.id
-          );
-          if (!existe) {
-            mostrarMensagem(payload.new);
-            while (chat.children.length > 10) {
-              chat.removeChild(chat.firstChild);
-            }
-            setTimeout(() => {
-              if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-            }, 50);
-          }
-        }
-      )
-      .subscribe();
+    let chatChannel; // Variável global para o canal
 
+    function subscribeToChat() {
+      if (chatChannel) {
+        chatChannel.unsubscribe();
+      }
+      chatChannel = supabase
+        .channel("public:meu-chat")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "meu-chat" },
+          (payload) => {
+            const existe = Array.from(chat.children).some(
+              (li) => li.dataset.id === payload.new.id
+            );
+            if (!existe) {
+              mostrarMensagem(payload.new);
+              while (chat.children.length > 10) {
+                chat.removeChild(chat.firstChild);
+              }
+              setTimeout(() => {
+                if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+              }, 50);
+            }
+          }
+        )
+        .on("close", () => {
+          // Canal desconectado, tenta reconectar
+          setTimeout(() => {
+            subscribeToChat();
+            carregarMensagens();
+          }, 2000);
+        })
+        .on("error", () => {
+          // Erro no canal, tenta reconectar
+          setTimeout(() => {
+            subscribeToChat();
+            carregarMensagens();
+          }, 2000);
+        })
+        .subscribe();
+    }
+
+    subscribeToChat();
     carregarMensagens();
   }
 
