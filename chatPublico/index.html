@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de Conexão - Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Chat em Tempo Real</h1>
+    <div class="user-box">
+      <input id="usuario" type="text" placeholder="Seu nome de usuário" maxlength="32" autocomplete="off" />
+    </div>
+    <div class="chat-box">
+      <ul id="chat" class="chat-list"></ul>
+    </div>
+    <div class="input-box">
+      <textarea id="mensagem" placeholder="Digite sua mensagem..." maxlength="500"></textarea>
+      <button id="enviar">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://xhybbhdhjaluqjrtopml.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoeWJiaGRoamFsdXFqcnRvcG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNzQ5NjMsImV4cCI6MjA2ODg1MDk2M30.Xb98A6l-duDBO6G8_3SPKwluyAm-v8LH5G22ysmSXck';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    const chat = document.getElementById('chat');
+    const usuarioInput = document.getElementById('usuario');
+    const mensagemInput = document.getElementById('mensagem');
+    const enviarBtn = document.getElementById('enviar');
+
+    // Função para exibir uma mensagem no chat
+    function mostrarMensagem(msg) {
+      const li = document.createElement('li');
+      li.className = 'chat-msg';
+      const data = new Date(msg.created_at);
+      const hora = data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      li.innerHTML = `<span class="user">${msg.usuario || 'Anônimo'}</span> <span class="hora">${hora}</span><br><span class="texto">${msg.texto}</span>`;
+      chat.appendChild(li);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Carregar mensagens existentes
+    async function carregarMensagens() {
+      chat.innerHTML = '';
+      const { data, error } = await supabase
+        .from('meu-chat')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (data) data.forEach(mostrarMensagem);
+    }
+
+    // Enviar mensagem
+    async function enviarMensagem() {
+      const usuario = usuarioInput.value.trim() || 'Anônimo';
+      const texto = mensagemInput.value.trim();
+      if (!texto) return;
+      mensagemInput.value = '';
+      await supabase.from('meu-chat').insert([{ usuario, texto }]);
+    }
+
+    enviarBtn.onclick = enviarMensagem;
+    mensagemInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        enviarMensagem();
+      }
+    });
+
+    // Realtime: escutar novas mensagens
+    supabase
+      .channel('public:meu-chat')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'meu-chat' }, payload => {
+        mostrarMensagem(payload.new);
+      })
+      .subscribe();
+
+    carregarMensagens();
+  </script>
+</body>
+</html>
