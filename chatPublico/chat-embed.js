@@ -32,14 +32,7 @@
     ::-webkit-scrollbar-thumb { background: #40444b; border-radius: 4px; }
     .erro-usuario { border: 2px solid #ff5555 !important; box-shadow: 0 0 0 2px #ff555588; background: #3a2323 !important; color: #fff !important; }
     .erro-usuario::placeholder { color: #ff5555 !important; opacity: 1; }
-    @media (max-width: 600px) {
-      body { height: 100vh; min-height: 100vh; max-height: 100vh; margin: 0; padding: 0; overflow: hidden; }
-      .chat-wrapper { width: 100vw; max-width: 100vw; max-height: 100vh; border-radius: 0; margin: 0; }
-      .container { width: 100%; height: 100%; min-height: 100%; border-radius: 0; margin: 0; }
-      .chat-box { flex: 1 1 0; min-height: 0; padding-left: 4px; padding-right: 4px; background: #23272a; }
-      .input-box { padding-left: 4px; padding-right: 4px; }
-      .user-box { padding-left: 8px; padding-right: 8px; }
-    }
+
   `;
 
   function mountChat() {
